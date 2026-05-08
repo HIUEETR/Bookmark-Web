@@ -67,32 +67,63 @@ function renderHtmlNode(node: BookmarkNode, depth: number): string[] {
 }
 
 function parseNetscapeHtml(html: string): ImportedBookmarkNode[] {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const rootDl = doc.querySelector("dl");
-  if (!rootDl) throw new Error("Invalid HTML bookmark file");
-  return parseDl(rootDl);
-}
+  const roots: ImportedBookmarkNode[] = [];
+  const stack: ImportedBookmarkNode[][] = [roots];
+  let pendingFolder: ImportedBookmarkNode | null = null;
+  let hasRootList = false;
+  const tokenPattern = /<DT>\s*<H3\b[^>]*>([\s\S]*?)<\/H3>|<DT>\s*<A\b([^>]*)>([\s\S]*?)<\/A>|<DL\b[^>]*>|<\/DL\s*>/gi;
 
-function parseDl(dl: Element): ImportedBookmarkNode[] {
-  const result: ImportedBookmarkNode[] = [];
-  const children = Array.from(dl.children);
-  for (let i = 0; i < children.length; i++) {
-    const element = children[i];
-    if (element.tagName.toLowerCase() !== "dt") continue;
-    const link = element.querySelector(":scope > a");
-    if (link) {
-      const href = link.getAttribute("href");
-      if (href) result.push({ title: link.textContent || href, url: href });
+  for (const match of html.matchAll(tokenPattern)) {
+    const token = match[0];
+    const tag = token.match(/^<\/?\w+/)?.[0].toLowerCase();
+
+    if (match[1] !== undefined) {
+      const folder: ImportedBookmarkNode = { title: decodeHtml(stripHtml(match[1])) || "Folder", children: [] };
+      stack[stack.length - 1].push(folder);
+      pendingFolder = folder;
       continue;
     }
-    const heading = element.querySelector(":scope > h3");
-    const next = children[i + 1];
-    if (heading && next?.tagName.toLowerCase() === "dl") {
-      result.push({ title: heading.textContent || "Folder", children: parseDl(next) });
-      i++;
+
+    if (match[2] !== undefined) {
+      const href = getAttribute(match[2], "href");
+      if (href) stack[stack.length - 1].push({ title: decodeHtml(stripHtml(match[3])) || href, url: decodeHtml(href) });
+      pendingFolder = null;
+      continue;
     }
+
+    if (tag === "<dl") {
+      if (!hasRootList) {
+        hasRootList = true;
+      } else if (pendingFolder?.children) {
+        stack.push(pendingFolder.children);
+      }
+      pendingFolder = null;
+      continue;
+    }
+
+    if (tag === "</dl" && stack.length > 1) stack.pop();
   }
-  return result;
+
+  if (!hasRootList && roots.length === 0) throw new Error("Invalid HTML bookmark file");
+  return roots;
+}
+
+function stripHtml(value: string): string {
+  return value.replace(/<[^>]*>/g, "").trim();
+}
+
+function getAttribute(attributes: string, name: string): string | null {
+  const match = attributes.match(new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"));
+  return match?.[1] ?? match?.[2] ?? match?.[3] ?? null;
+}
+
+function decodeHtml(value: string): string {
+  return value.replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos|#39);/gi, (_, entity: string) => {
+    const lower = entity.toLowerCase();
+    if (lower.startsWith("#x")) return String.fromCodePoint(Number.parseInt(lower.slice(2), 16));
+    if (lower.startsWith("#")) return String.fromCodePoint(Number.parseInt(lower.slice(1), 10));
+    return { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'" }[lower] || `&${entity};`;
+  });
 }
 
 function escapeHtml(value: string): string {
