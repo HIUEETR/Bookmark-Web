@@ -141,6 +141,30 @@ export default function App() {
     setTrashEntries(await getTrashEntries());
   }
 
+  async function loadBookmarksWithColumns(folderIds: string[]) {
+    const nextTree = await getTree();
+    const folders = extractAllFolders(nextTree);
+    const uniqueFolderIds = Array.from(new Set(folderIds)).filter((id) => folders.some((folder) => folder.id === id));
+    const selectedFolderIds = uniqueFolderIds.length >= 2 ? uniqueFolderIds : [...uniqueFolderIds, ...folders.map((folder) => folder.id)].slice(0, 2);
+    const nextColumns = selectedFolderIds.map((folderId, index) => {
+      const parentChain = buildParentChain(nextTree, folderId);
+      const folder = folders.find((item) => item.id === folderId);
+      return {
+        id: `col-${Date.now()}-${index}`,
+        folderId,
+        folderTitle: parentChain[parentChain.length - 1]?.title || folder?.title || "Unknown",
+        tree: findFolderTree(nextTree, folderId) || [],
+        expandedFolders: new Set<string>(),
+        parentChain,
+      };
+    });
+    setTree(nextTree);
+    setAllFolders(folders);
+    setColumns(nextColumns);
+    await saveColumns(nextColumns);
+    setTrashEntries(await getTrashEntries());
+  }
+
   function buildColumns(nextTree: BookmarkNode[], folders: FolderOption[], savedState: SavedState | null): ColumnData[] {
     if (savedState && savedState.columns.length >= 2) {
       const restored = savedState.columns
@@ -351,8 +375,10 @@ export default function App() {
       try {
         setBusy(true);
         const nodes = parseBookmarkFile(await file.text(), file.name);
-        await importNodes(nodes, await getImportedBookmarksFolderId());
-        await loadBookmarks();
+        const importFolderId = await getImportedBookmarksFolderId();
+        const importedNodes = await importNodes(nodes, importFolderId);
+        const importedFolderIds = importedNodes.filter((node) => node.children).map((node) => node.id);
+        await loadBookmarksWithColumns([importFolderId, ...importedFolderIds]);
         setShowWelcome(false);
         showToast(t.toast.imported);
       } catch {
@@ -596,9 +622,10 @@ export default function App() {
   if (showWelcome) {
     return (
       <div className="app">
-        <WelcomeScreen onReady={async () => {
+        <WelcomeScreen onReady={async (folderIds) => {
           setShowWelcome(false);
-          await loadBookmarks();
+          if (folderIds) await loadBookmarksWithColumns(folderIds);
+          else await loadBookmarks();
         }} />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>

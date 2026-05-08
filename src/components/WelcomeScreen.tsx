@@ -4,7 +4,7 @@ import { importNodes, parseBookmarkFile } from "../lib/importExport";
 import { IconDownload, IconUpload } from "./Icons";
 
 type WelcomeScreenProps = {
-  onReady: () => Promise<void> | void;
+  onReady: (folderIds?: string[]) => Promise<void> | void;
 };
 
 export function WelcomeScreen({ onReady }: WelcomeScreenProps) {
@@ -18,8 +18,9 @@ export function WelcomeScreen({ onReady }: WelcomeScreenProps) {
     try {
       const nodes = parseBookmarkFile(await file.text(), file.name);
       const parentId = await getImportedBookmarksFolderId();
-      await importNodes(nodes, parentId);
-      await onReady();
+      const importedNodes = await importNodes(nodes, parentId);
+      const importedFolderIds = importedNodes.filter((node) => node.children).map((node) => node.id);
+      await onReady([parentId, ...importedFolderIds]);
     } catch {
       setError("导入失败，请确认文件是浏览器导出的 HTML 书签文件或本项目导出的 JSON 文件。");
     } finally {

@@ -13,15 +13,18 @@ export function validateImportedNodes(input: unknown): ImportedBookmarkNode[] {
   return roots.map(normalizeImportedNode).filter(Boolean) as ImportedBookmarkNode[];
 }
 
-export async function importNodes(nodes: ImportedBookmarkNode[], parentId: string): Promise<void> {
+export async function importNodes(nodes: ImportedBookmarkNode[], parentId: string): Promise<BookmarkNode[]> {
+  const created: BookmarkNode[] = [];
   for (const node of nodes) {
     if (node.url) {
-      await createBookmark({ parentId, title: node.title || node.url, url: node.url });
+      created.push(await createBookmark({ parentId, title: node.title || node.url, url: node.url }));
     } else if (node.children) {
       const folder = await createFolder({ parentId, title: node.title || "Imported" });
       await importNodes(node.children, folder.id);
+      created.push(folder);
     }
   }
+  return created;
 }
 
 export function exportJson(tree: BookmarkNode[]): Blob {
