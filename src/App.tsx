@@ -144,8 +144,10 @@ export default function App() {
   async function loadBookmarksWithColumns(folderIds: string[]) {
     const nextTree = await getTree();
     const folders = extractAllFolders(nextTree);
-    const uniqueFolderIds = Array.from(new Set(folderIds)).filter((id) => folders.some((folder) => folder.id === id));
-    const selectedFolderIds = uniqueFolderIds.length >= 2 ? uniqueFolderIds : [...uniqueFolderIds, ...folders.map((folder) => folder.id)].slice(0, 2);
+    const validFolderIds = folderIds.filter((id, index) => folderIds.indexOf(id) === index && folders.some((folder) => folder.id === id));
+    const fallbackFolderId = validFolderIds[0] ?? folders[0]?.id;
+    const selectedFolderIds = validFolderIds.slice(0, 4);
+    while (selectedFolderIds.length < 2 && fallbackFolderId) selectedFolderIds.push(fallbackFolderId);
     const nextColumns = selectedFolderIds.map((folderId, index) => {
       const parentChain = buildParentChain(nextTree, folderId);
       const folder = folders.find((item) => item.id === folderId);
@@ -201,14 +203,14 @@ export default function App() {
     const usedFolderIds = new Set(columns.map((c) => c.folderId));
     const available = allFolders.filter((f) => !usedFolderIds.has(f.id));
     if (available.length === 0) return;
-    const newFolderId = available[0].id;
+    const newFolder = available.find((folder) => (findFolderTree(tree, folder.id) || []).length > 0) || available[0];
     const nextColumn: ColumnData = {
       id: `col-${Date.now()}`,
-      folderId: newFolderId,
-      folderTitle: available[0].title,
-      tree: findFolderTree(tree, newFolderId) || [],
+      folderId: newFolder.id,
+      folderTitle: newFolder.title,
+      tree: findFolderTree(tree, newFolder.id) || [],
       expandedFolders: new Set(),
-      parentChain: buildParentChain(tree, newFolderId),
+      parentChain: buildParentChain(tree, newFolder.id),
     };
     const nextColumns = [...columns, nextColumn];
     setColumns(nextColumns);
@@ -377,7 +379,7 @@ export default function App() {
         const nodes = parseBookmarkFile(await file.text(), file.name);
         const importFolderId = await getImportedBookmarksFolderId();
         const importedNodes = await importNodes(nodes, importFolderId);
-        const importedFolderIds = importedNodes.filter((node) => node.children).map((node) => node.id);
+        const importedFolderIds = importedNodes.filter((node) => node.children && node.children.length > 0).map((node) => node.id);
         await loadBookmarksWithColumns([importFolderId, ...importedFolderIds]);
         setShowWelcome(false);
         showToast(t.toast.imported);

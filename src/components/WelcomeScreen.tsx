@@ -19,7 +19,7 @@ export function WelcomeScreen({ onReady }: WelcomeScreenProps) {
       const nodes = parseBookmarkFile(await file.text(), file.name);
       const parentId = await getImportedBookmarksFolderId();
       const importedNodes = await importNodes(nodes, parentId);
-      const importedFolderIds = importedNodes.filter((node) => node.children).map((node) => node.id);
+      const importedFolderIds = importedNodes.filter((node) => node.children && node.children.length > 0).map((node) => node.id);
       await onReady([parentId, ...importedFolderIds]);
     } catch {
       setError("导入失败，请确认文件是浏览器导出的 HTML 书签文件或本项目导出的 JSON 文件。");
