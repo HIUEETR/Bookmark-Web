@@ -35,6 +35,7 @@ export interface ColumnData {
   tree: BookmarkNode[];
   expandedFolders: Set<string>;
   parentChain: { id: string; title: string }[];
+  width?: number;
 }
 
 export interface SavedColumn {
@@ -43,6 +44,7 @@ export interface SavedColumn {
   folderTitle: string;
   expandedFolders: string[];
   parentChain: { id: string; title: string }[];
+  width?: number;
 }
 
 export interface SavedState {
