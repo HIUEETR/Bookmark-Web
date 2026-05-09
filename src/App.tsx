@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   BatchMoveRecord,
   BookmarkDetail,
@@ -76,6 +76,16 @@ import "./styles/app.css";
 
 const STATE_KEY = "my-bookmark-state";
 const LAYOUTS_KEY = "my-bookmark-layouts";
+const MIN_COLUMN_WIDTH = 280;
+const MAX_COLUMN_WIDTH = 560;
+const DEFAULT_COLUMN_WIDTH = 340;
+const COLUMN_DND_TYPE = "application/x-bookmark-column-id";
+const BOOKMARK_DND_TYPE = "application/x-bookmark-id";
+
+function clampColumnWidth(width: number | undefined): number {
+  if (typeof width !== "number" || Number.isNaN(width)) return DEFAULT_COLUMN_WIDTH;
+  return Math.min(MAX_COLUMN_WIDTH, Math.max(MIN_COLUMN_WIDTH, width));
+}
 
 export default function App() {
   const { t, localeSetting, setLocaleSetting } = useI18n();
@@ -89,6 +99,10 @@ export default function App() {
   const [undoStack, setUndoStack] = useState<BatchMoveRecord[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [dragTargetColumn, setDragTargetColumn] = useState<string | null>(null);
+  const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
+  const [columnDropTargetId, setColumnDropTargetId] = useState<string | null>(null);
+  const [resizingColumnId, setResizingColumnId] = useState<string | null>(null);
+  const columnsRef = useRef<ColumnData[]>([]);
   const [emptyFolders, setEmptyFolders] = useState<FolderOption[]>([]);
   const [showEmptyModal, setShowEmptyModal] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -115,6 +129,10 @@ export default function App() {
   useEffect(() => {
     void loadInitialState();
   }, []);
+
+  useEffect(() => {
+    columnsRef.current = columns;
+  }, [columns]);
 
   const showToast = (message: string) => setToast(message);
 
@@ -158,6 +176,7 @@ export default function App() {
         tree: findFolderTree(nextTree, folderId) || [],
         expandedFolders: new Set<string>(),
         parentChain,
+        width: DEFAULT_COLUMN_WIDTH,
       };
     });
     setTree(nextTree);
@@ -180,6 +199,7 @@ export default function App() {
             tree: findFolderTree(nextTree, col.folderId) || [],
             expandedFolders: new Set(col.expandedFolders),
             parentChain: buildParentChain(nextTree, col.folderId),
+            width: clampColumnWidth(col.width),
           };
         });
       if (restored.length >= 2) return restored;
@@ -192,6 +212,7 @@ export default function App() {
       tree: folder.children || [],
       expandedFolders: new Set<string>(),
       parentChain: [{ id: folder.id, title: folder.title || "Bookmark Bar" }],
+      width: DEFAULT_COLUMN_WIDTH,
     }));
   }
 
@@ -211,6 +232,7 @@ export default function App() {
       tree: findFolderTree(tree, newFolder.id) || [],
       expandedFolders: new Set(),
       parentChain: buildParentChain(tree, newFolder.id),
+      width: DEFAULT_COLUMN_WIDTH,
     };
     const nextColumns = [...columns, nextColumn];
     setColumns(nextColumns);
@@ -443,18 +465,92 @@ export default function App() {
   const handleColumnDragOver = (e: React.DragEvent, columnId: string) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDragTargetColumn(columnId);
+    if (Array.from(e.dataTransfer.types).includes(COLUMN_DND_TYPE)) {
+      setColumnDropTargetId(columnId);
+      setDragTargetColumn(null);
+    } else {
+      setDragTargetColumn(columnId);
+    }
   };
 
   const handleColumnDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
     setDragTargetColumn(null);
-    const bookmarkId = e.dataTransfer.getData("text/plain");
+    setColumnDropTargetId(null);
+    const draggedColumnId = e.dataTransfer.getData(COLUMN_DND_TYPE);
+    if (draggedColumnId) {
+      if (draggedColumnId === targetColumnId) return;
+      const fromIndex = columns.findIndex((c) => c.id === draggedColumnId);
+      const toIndex = columns.findIndex((c) => c.id === targetColumnId);
+      if (fromIndex < 0 || toIndex < 0) return;
+      const nextColumns = [...columns];
+      const [movedColumn] = nextColumns.splice(fromIndex, 1);
+      nextColumns.splice(toIndex, 0, movedColumn);
+      setColumns(nextColumns);
+      await saveColumns(nextColumns);
+      return;
+    }
+
+    const bookmarkId = e.dataTransfer.getData(BOOKMARK_DND_TYPE) || e.dataTransfer.getData("text/plain");
     const targetColumn = columns.find((c) => c.id === targetColumnId);
     if (!targetColumn || !bookmarkId) return;
     if (selectedIds.has(bookmarkId)) await moveSelectedBookmarks(targetColumn.folderId, targetColumn.tree.length);
     else await moveSingleBookmark(bookmarkId, targetColumn.folderId, targetColumn.tree.length);
   };
+
+  const startColumnDrag = (e: React.DragEvent, columnId: string) => {
+    e.dataTransfer.setData(COLUMN_DND_TYPE, columnId);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggingColumnId(columnId);
+  };
+
+  const handleColumnDragEnd = () => {
+    setDraggingColumnId(null);
+    setColumnDropTargetId(null);
+  };
+
+  const resizeColumn = (columnId: string, width: number) => {
+    const nextWidth = clampColumnWidth(width);
+    setColumns((currentColumns) => {
+      const nextColumns = currentColumns.map((column) => (column.id === columnId ? { ...column, width: nextWidth } : column));
+      columnsRef.current = nextColumns;
+      return nextColumns;
+    });
+    return nextWidth;
+  };
+
+  const startColumnResize = (e: React.PointerEvent, columnId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startWidth = clampColumnWidth(columns.find((column) => column.id === columnId)?.width);
+    setResizingColumnId(columnId);
+
+    const handlePointerMove = (event: PointerEvent) => {
+      resizeColumn(columnId, startWidth + event.clientX - startX);
+    };
+
+    const handlePointerUp = () => {
+      setResizingColumnId(null);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      void saveColumns(columnsRef.current);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
+
+  const handleColumnResizeKeyDown = (e: React.KeyboardEvent, columnId: string) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const direction = e.key === "ArrowRight" ? 1 : -1;
+    const step = e.shiftKey ? 40 : 10;
+    const currentWidth = clampColumnWidth(columns.find((column) => column.id === columnId)?.width);
+    resizeColumn(columnId, currentWidth + direction * step);
+    void saveColumns(columnsRef.current);
+  };
+
 
   async function moveSingleBookmark(bookmarkId: string, targetFolderId: string, targetIndex: number) {
     const latestTree = await getTree();
@@ -681,12 +777,24 @@ export default function App() {
           {columns.map((column) => (
             <div
               key={column.id}
-              className={`column${dragTargetColumn === column.id ? " drag-over" : ""}`}
+              className={`column${dragTargetColumn === column.id ? " drag-over" : ""}${columnDropTargetId === column.id ? " reorder-over" : ""}${draggingColumnId === column.id ? " dragging" : ""}${resizingColumnId === column.id ? " resizing" : ""}`}
+              style={{ width: clampColumnWidth(column.width), flex: "0 0 auto" }}
               onDragOver={(e) => handleColumnDragOver(e, column.id)}
-              onDragLeave={() => setDragTargetColumn(null)}
+              onDragLeave={() => {
+                setDragTargetColumn(null);
+                setColumnDropTargetId(null);
+              }}
               onDrop={(e) => void handleColumnDrop(e, column.id)}
             >
               <div className="column-header">
+                <button
+                  className="column-drag-handle"
+                  draggable
+                  onDragStart={(e) => startColumnDrag(e, column.id)}
+                  onDragEnd={handleColumnDragEnd}
+                  title="拖拽调整列顺序"
+                  aria-label="拖拽调整列顺序"
+                />
                 <div className="column-nav">
                   {column.parentChain.length > 1 && <button onClick={() => goBack(column.id)} className="back-btn" title={t.column.goBack}><IconArrowLeft /></button>}
                   <span className="folder-path">
@@ -724,6 +832,18 @@ export default function App() {
                   parentFolderId={column.folderId}
                 />
               </div>
+              <div
+                className="column-resize-handle"
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="调整列宽"
+                aria-valuemin={MIN_COLUMN_WIDTH}
+                aria-valuemax={MAX_COLUMN_WIDTH}
+                aria-valuenow={clampColumnWidth(column.width)}
+                tabIndex={0}
+                onPointerDown={(e) => startColumnResize(e, column.id)}
+                onKeyDown={(e) => handleColumnResizeKeyDown(e, column.id)}
+              />
             </div>
           ))}
         </div>
