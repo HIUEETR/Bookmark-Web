@@ -507,8 +507,14 @@
   user-select: none;
 }
 
-.folder-item:hover {
+.folder-item:hover,
+.folder-item.folder-drop-target {
   background: var(--bg-hover);
+}
+
+.folder-item.folder-drop-target {
+  color: var(--accent-primary);
+  box-shadow: inset 0 0 0 1px var(--accent-primary);
 }
 
 .expand-icon {

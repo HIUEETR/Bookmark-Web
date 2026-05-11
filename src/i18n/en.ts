@@ -20,7 +20,6 @@ const en = {
     undo: "Undo ({{count}})",
     duplicates: "Duplicates",
     broken: "Check Links",
-    layouts: "Layouts",
     trash: "Trash",
     systemLocale: "Auto",
     toggleTheme: "Toggle theme",
@@ -100,13 +99,6 @@ const en = {
     ok: "OK",
     broken: "Broken",
     unknown: "Unknown",
-  },
-  layouts: {
-    title: "Layout presets",
-    namePlaceholder: "Preset name",
-    save: "Save layout",
-    empty: "No saved layouts",
-    saved: "Layout saved",
   },
   trash: {
     title: "Trash",

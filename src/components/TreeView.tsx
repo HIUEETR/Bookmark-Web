@@ -38,6 +38,7 @@ export function TreeView({
 }: TreeViewProps) {
   const { t } = useI18n();
   const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const [dropFolderId, setDropFolderId] = useState<string | null>(null);
 
   return (
     <div style={{ paddingLeft: depth * 16 + "px" }}>
@@ -50,16 +51,21 @@ export function TreeView({
           return (
             <div key={node.id}>
               <div
-                className="folder-item"
+                className={`folder-item${dropFolderId === node.id ? " folder-drop-target" : ""}`}
                 onDragOver={(e) => {
+                  const bookmarkId = e.dataTransfer.getData(BOOKMARK_DND_TYPE) || e.dataTransfer.getData("text/plain");
+                  if (bookmarkId === node.id) return;
                   e.preventDefault();
                   e.dataTransfer.dropEffect = "move";
+                  setDropFolderId(node.id);
                 }}
+                onDragLeave={() => setDropFolderId(null)}
                 onDrop={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   const bookmarkId = e.dataTransfer.getData(BOOKMARK_DND_TYPE) || e.dataTransfer.getData("text/plain");
-                  if (bookmarkId) onMove?.(bookmarkId, node.id, node.children?.length || 0);
+                  setDropFolderId(null);
+                  if (bookmarkId && bookmarkId !== node.id) onMove?.(bookmarkId, node.id, node.children?.length || 0);
                 }}
                 onClick={(e) => {
                   e.stopPropagation();

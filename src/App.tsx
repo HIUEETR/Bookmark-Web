@@ -8,7 +8,6 @@ import type {
   ConfirmState,
   DuplicateGroup,
   FolderOption,
-  LayoutPreset,
   PromptState,
   SavedState,
   TrashEntry,
@@ -54,7 +53,6 @@ import { FolderPickerModal } from "./components/FolderPickerModal";
 import { BookmarkDetailsPanel } from "./components/BookmarkDetailsPanel";
 import { DuplicateBookmarksModal } from "./components/DuplicateBookmarksModal";
 import { BrokenBookmarksModal } from "./components/BrokenBookmarksModal";
-import { LayoutPresetsModal } from "./components/LayoutPresetsModal";
 import { StatsPanel } from "./components/StatsPanel";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import {
@@ -70,12 +68,10 @@ import {
   IconBroom,
   IconSun,
   IconMoon,
-  IconColumns,
 } from "./components/Icons";
 import "./styles/app.css";
 
 const STATE_KEY = "my-bookmark-state";
-const LAYOUTS_KEY = "my-bookmark-layouts";
 const MIN_COLUMN_WIDTH = 280;
 const MAX_COLUMN_WIDTH = 560;
 const DEFAULT_COLUMN_WIDTH = 340;
@@ -95,7 +91,6 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [columns, setColumns] = useState<ColumnData[]>([]);
   const [allFolders, setAllFolders] = useState<FolderOption[]>([]);
-  const [layouts, setLayouts] = useState<LayoutPreset[]>([]);
   const [undoStack, setUndoStack] = useState<BatchMoveRecord[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [dragTargetColumn, setDragTargetColumn] = useState<string | null>(null);
@@ -117,7 +112,6 @@ export default function App() {
   const [showBroken, setShowBroken] = useState(false);
   const [brokenResults, setBrokenResults] = useState<BrokenBookmarkResult[]>([]);
   const [checkingBroken, setCheckingBroken] = useState(false);
-  const [showLayouts, setShowLayouts] = useState(false);
   const [trashEntries, setTrashEntries] = useState<TrashEntry[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -142,8 +136,6 @@ export default function App() {
   }
 
   async function loadInitialState() {
-    const savedLayouts = await readStorage<LayoutPreset[]>(LAYOUTS_KEY, []);
-    setLayouts(savedLayouts);
     setShowWelcome(await isBookmarksEmpty());
     await loadBookmarks();
   }
@@ -664,26 +656,6 @@ export default function App() {
     setCheckingBroken(false);
   };
 
-  const saveLayoutPreset = async (name: string) => {
-    const next = [{ id: `${Date.now()}`, name, columns: serializeColumns(columns), createdAt: Date.now() }, ...layouts];
-    setLayouts(next);
-    await writeStorage(LAYOUTS_KEY, next);
-    showToast(t.layouts.saved);
-  };
-
-  const applyLayoutPreset = async (preset: LayoutPreset) => {
-    const nextColumns = buildColumns(tree, allFolders, { columns: preset.columns });
-    setColumns(nextColumns);
-    await saveColumns(nextColumns);
-    setShowLayouts(false);
-  };
-
-  const deleteLayoutPreset = async (id: string) => {
-    const next = layouts.filter((preset) => preset.id !== id);
-    setLayouts(next);
-    await writeStorage(LAYOUTS_KEY, next);
-  };
-
   const restoreTrashEntry = async (entry: TrashEntry) => {
     if (!entry.parentId) return;
     await importNodes([{ title: entry.node.title, url: entry.node.url, children: entry.node.children }], entry.parentId);
@@ -704,12 +676,10 @@ export default function App() {
       onConfirm: async () => {
         await resetBookmarks();
         await writeStorage<SavedState | null>(STATE_KEY, null);
-        await writeStorage<LayoutPreset[]>(LAYOUTS_KEY, []);
         await writeStorage<TrashEntry[]>("my-bookmark-trash", []);
         setUndoStack([]);
         setSelectedIds(new Set());
         setDetail(null);
-        setLayouts([]);
         setTrashEntries([]);
         setShowWelcome(true);
         await loadBookmarks();
@@ -751,7 +721,6 @@ export default function App() {
         <div className="header-right">
           <button className="btn btn-ghost" onClick={() => setShowDuplicates(true)}>{t.header.duplicates}</button>
           <button className="btn btn-ghost" onClick={() => setShowBroken(true)}>{t.header.broken}</button>
-          <button className="btn btn-ghost" onClick={() => setShowLayouts(true)}><IconColumns />{t.header.layouts}</button>
           <button className="btn btn-ghost" onClick={() => setShowTrash(true)}>{t.header.trash} ({trashEntries.length})</button>
           <button className="btn btn-ghost" onClick={handleResetLocalData}>重置数据</button>
           <div className="toggle-group">
@@ -857,7 +826,6 @@ export default function App() {
       {folderPicker && <FolderPickerModal folders={allFolders} title={t.modal.folderPicker.title} onPick={(folderId) => { setFolderPicker(null); void moveSelectedBookmarks(folderId, 0); }} onClose={() => setFolderPicker(null)} />}
       {showDuplicates && <DuplicateBookmarksModal groups={duplicateGroups} selectedIds={duplicateSelection} onToggle={(id) => setDuplicateSelection((prev) => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; })} onDelete={handleDuplicateDelete} onClose={() => setShowDuplicates(false)} />}
       {showBroken && <BrokenBookmarksModal results={brokenResults} loading={checkingBroken} onCheck={() => void runBrokenCheck()} onClose={() => setShowBroken(false)} />}
-      {showLayouts && <LayoutPresetsModal presets={layouts} onSave={(name) => void saveLayoutPreset(name)} onApply={(preset) => void applyLayoutPreset(preset)} onDelete={(id) => void deleteLayoutPreset(id)} onClose={() => setShowLayouts(false)} />}
       {showTrash && (
         <div className="modal-overlay" onClick={() => setShowTrash(false)}>
           <div className="empty-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>

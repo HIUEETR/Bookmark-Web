@@ -75,13 +75,6 @@ export interface BookmarkDetail {
   path: string;
 }
 
-export interface LayoutPreset {
-  id: string;
-  name: string;
-  columns: SavedColumn[];
-  createdAt: number;
-}
-
 export interface TrashEntry {
   id: string;
   deletedAt: number;
