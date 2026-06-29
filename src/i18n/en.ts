@@ -34,6 +34,8 @@ const en = {
     deleteFolder: "Delete folder",
     removeColumn: "Remove column",
     goBack: "Go back",
+    dragHandle: "Drag to reorder columns",
+    resizeHandle: "Resize column",
   },
   tree: {
     rename: "Rename",

@@ -36,6 +36,8 @@ const zh: Translations = {
     deleteFolder: "删除文件夹",
     removeColumn: "移除列",
     goBack: "返回",
+    dragHandle: "拖拽调整列顺序",
+    resizeHandle: "调整列宽",
   },
   tree: {
     rename: "重命名",

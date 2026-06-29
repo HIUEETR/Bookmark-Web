@@ -761,8 +761,8 @@ export default function App() {
                   draggable
                   onDragStart={(e) => startColumnDrag(e, column.id)}
                   onDragEnd={handleColumnDragEnd}
-                  title="拖拽调整列顺序"
-                  aria-label="拖拽调整列顺序"
+                  title={t.column.dragHandle}
+                  aria-label={t.column.dragHandle}
                 />
                 <div className="column-nav">
                   {column.parentChain.length > 1 && <button onClick={() => goBack(column.id)} className="back-btn" title={t.column.goBack}><IconArrowLeft /></button>}
@@ -805,7 +805,7 @@ export default function App() {
                 className="column-resize-handle"
                 role="separator"
                 aria-orientation="vertical"
-                aria-label="调整列宽"
+                aria-label={t.column.resizeHandle}
                 aria-valuemin={MIN_COLUMN_WIDTH}
                 aria-valuemax={MAX_COLUMN_WIDTH}
                 aria-valuenow={clampColumnWidth(column.width)}
