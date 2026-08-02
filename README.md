@@ -44,13 +44,13 @@
 
 ## 技术栈
 
-| 类别 | 技术 |
-|---|---|
-| 框架 | React 18 + TypeScript 5 |
-| 构建 | Vite 5（支持子路径部署） |
-| 部署 | GitHub Pages（GitHub Actions 自动部署） |
-| 测试 | Vitest 4 |
-| 代码规范 | ESLint 10 |
+| 类别     | 技术                                    |
+| -------- | --------------------------------------- |
+| 框架     | React 18 + TypeScript 5                 |
+| 构建     | Vite 5（支持子路径部署）                |
+| 部署     | GitHub Pages（GitHub Actions 自动部署） |
+| 测试     | Vitest 4                                |
+| 代码规范 | ESLint 10                               |
 
 ## 开发
 
@@ -126,14 +126,14 @@ Bookmark-Web/
 
 书签数据保存在浏览器的 `localStorage` 中：
 
-| 键 | 用途 |
-|---|---|
-| `bookmark-web-tree` | 书签树结构 |
+| 键                       | 用途          |
+| ------------------------ | ------------- |
+| `bookmark-web-tree`    | 书签树结构    |
 | `bookmark-web-next-id` | 下一个书签 id |
-| `my-bookmark-state` | 列布局 |
-| `my-bookmark-trash` | 回收站数据 |
-| `my-bookmark-theme` | 主题设置 |
-| `my-bookmark-locale` | 语言设置 |
+| `my-bookmark-state`    | 列布局        |
+| `my-bookmark-trash`    | 回收站数据    |
+| `my-bookmark-theme`    | 主题设置      |
+| `my-bookmark-locale`   | 语言设置      |
 
 > 注：键名前缀不统一是历史遗留（部分键沿用扩展版命名），不影响功能。刷新页面后数据仍保留；清理浏览器站点数据会删除本地书签，请提前导出备份。
 
@@ -146,4 +146,4 @@ Bookmark-Web/
 
 ## 相关项目
 
-- **My-Bookmark**（[仓库](../My-Bookmark)）：浏览器扩展版本，直接管理 Chrome / Edge 原生书签，使用 `chrome.bookmarks` API，支持在浏览器书签栏中原生显示。
+- **My-Bookmark**（[仓库](https://github.com/HIUEETR/Bookmark-extension)）：浏览器扩展版本，直接管理 Chrome / Edge 原生书签，使用 `chrome.bookmarks` API，支持在浏览器书签栏中原生显示。
