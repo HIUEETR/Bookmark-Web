@@ -1186,3 +1186,12 @@ a:focus-visible {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Confirm modal should appear above other modals (e.g. duplicates) */
+.prompt-modal.confirm-modal {
+  position: relative;
+  z-index: 1100;
+}
+.modal-overlay:has(.confirm-modal) {
+  z-index: 1100;
+}

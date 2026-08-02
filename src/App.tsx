@@ -635,6 +635,17 @@ export default function App() {
     setSearchQuery("");
   };
 
+    const openDuplicates = () => {
+    const next = new Set<string>();
+    for (const group of duplicateGroups) {
+      group.items.forEach((item, index) => {
+        if (index < group.items.length - 1) next.add(item.node.id);
+      });
+    }
+    setDuplicateSelection(next);
+    setShowDuplicates(true);
+  };
+
   const handleDuplicateDelete = () => {
     const ids = Array.from(duplicateSelection);
     setConfirmModal({
@@ -668,11 +679,11 @@ export default function App() {
 
   const handleResetLocalData = () => {
     setConfirmModal({
-      title: "清空本地数据",
-      message: "这会删除当前浏览器里保存的全部书签、布局和回收站数据。此操作不可撤销。",
-      confirmLabel: "清空",
+      title: t.confirm.resetTitle,
+      message: t.confirm.resetMessage,
+      confirmLabel: t.confirm.resetConfirm,
       danger: true,
-      requireText: "清空",
+      requireText: t.confirm.resetConfirm,
       onConfirm: async () => {
         await resetBookmarks();
         await writeStorage<SavedState | null>(STATE_KEY, null);
@@ -719,10 +730,10 @@ export default function App() {
           <button onClick={handleUndo} disabled={undoStack.length === 0 || busy} className="btn btn-ghost"><IconUndo />{tr(t.header.undo, { count: undoStack.length })}</button>
         </div>
         <div className="header-right">
-          <button className="btn btn-ghost" onClick={() => setShowDuplicates(true)}>{t.header.duplicates}</button>
+          <button className="btn btn-ghost" onClick={() => openDuplicates()}>{t.header.duplicates}</button>
           <button className="btn btn-ghost" onClick={() => setShowBroken(true)}>{t.header.broken}</button>
           <button className="btn btn-ghost" onClick={() => setShowTrash(true)}>{t.header.trash} ({trashEntries.length})</button>
-          <button className="btn btn-ghost" onClick={handleResetLocalData}>重置数据</button>
+          <button className="btn btn-ghost" onClick={handleResetLocalData}>{t.header.resetData}</button>
           <div className="toggle-group">
             {(["system", "en", "zh"] as const).map((value) => (
               <button key={value} className={`toggle-btn${localeSetting === value ? " active" : ""}`} onClick={() => setLocaleSetting(value)}>
@@ -736,7 +747,7 @@ export default function App() {
 
       <div className="toolbar-row">
         <SearchBar value={searchQuery} results={searchResults} onChange={setSearchQuery} onPick={handleSearchPick} />
-        <StatsPanel stats={stats} onDuplicates={() => setShowDuplicates(true)} onEmptyFolders={showClearEmptyModal} />
+        <StatsPanel stats={stats} onDuplicates={openDuplicates} onEmptyFolders={showClearEmptyModal} />
       </div>
 
       {selectedIds.size > 0 && <div className="selection-bar">{tr(t.selection.count, { count: selectedIds.size })} — {t.selection.dropHint}</div>}
@@ -846,3 +857,5 @@ export default function App() {
     </div>
   );
 }
+
+

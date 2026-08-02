@@ -12,6 +12,7 @@ const zh: Translations = {
     loading: "正在加载书签...",
   },
   header: {
+    resetData: "重置数据",
     addColumn: "添加列",
     clearEmpty: "清理空文件夹",
     deleteSelected: "删除 ({{count}})",
@@ -77,6 +78,9 @@ const zh: Translations = {
       ok: "确定",
     },
     confirm: {
+      resetTitle: "清空本地数据",
+      resetMessage: "这会删除当前浏览器里保存的全部书签、布局和回收站数据。此操作不可撤销。",
+      resetConfirm: "清空",
       typeToConfirm: '输入 "{{value}}" 以确认',
     },
     bookmarkEdit: {
@@ -92,8 +96,9 @@ const zh: Translations = {
   },
   duplicates: {
     title: "重复书签",
-    subtitle: "每组第一项默认保留。选择要删除的重复项。",
+    subtitle: "每组最后一项默认保留。已勾选的项将被删除。",
     none: "未发现重复书签",
+    keepLast: "保留（最后一项）",
   },
   broken: {
     title: "链接检查",
@@ -133,6 +138,9 @@ const zh: Translations = {
     batch: "{{count}} 个书签",
   },
   confirm: {
+      resetTitle: "清空本地数据",
+      resetMessage: "这会删除当前浏览器里保存的全部书签、布局和回收站数据。此操作不可撤销。",
+      resetConfirm: "清空",
     deleteFolderTitle: "删除文件夹",
     deleteSelectedTitle: "删除选中项",
     deleteFolder: '确定删除文件夹 "{{name}}" 吗？',
@@ -143,3 +151,4 @@ const zh: Translations = {
 } as const;
 
 export default zh;
+

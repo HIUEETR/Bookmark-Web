@@ -10,6 +10,7 @@ const en = {
     loading: "Loading bookmarks...",
   },
   header: {
+    resetData: "Reset data",
     addColumn: "Add Column",
     clearEmpty: "Clear Empty",
     deleteSelected: "Delete ({{count}})",
@@ -75,6 +76,9 @@ const en = {
       ok: "OK",
     },
     confirm: {
+      resetTitle: "Clear local data",
+      resetMessage: "This will permanently delete all bookmarks, layout, and trash data stored in this browser. This cannot be undone.",
+      resetConfirm: "Clear",
       typeToConfirm: 'Type "{{value}}" to confirm',
     },
     bookmarkEdit: {
@@ -90,8 +94,9 @@ const en = {
   },
   duplicates: {
     title: "Duplicate bookmarks",
-    subtitle: "The first item in each group is kept by default. Select duplicates to delete.",
+    subtitle: "The last item in each group is kept by default. Checked items will be deleted.",
     none: "No duplicate bookmarks found",
+    keepLast: "Keep (last)",
   },
   broken: {
     title: "Link checker",
@@ -131,6 +136,9 @@ const en = {
     batch: "{{count}} bookmarks",
   },
   confirm: {
+      resetTitle: "Clear local data",
+      resetMessage: "This will permanently delete all bookmarks, layout, and trash data stored in this browser. This cannot be undone.",
+      resetConfirm: "Clear",
     deleteFolderTitle: "Delete folder",
     deleteSelectedTitle: "Delete selected items",
     deleteFolder: 'Delete folder "{{name}}"?',
@@ -149,3 +157,4 @@ type DeepStringify<T> = T extends string
     : T;
 
 export type Translations = DeepStringify<typeof en>;
+
