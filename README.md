@@ -4,6 +4,8 @@
 
 无需安装任何扩展，打开网页即可使用。所有数据保存在浏览器 `localStorage`，不会上传到服务器。适合不想安装扩展、或使用不支持 Chrome 扩展的浏览器（如 Safari、移动端浏览器）的用户。
 
+[点击即可体验](https://hiueetr.github.io/Bookmark-Web/)
+
 ## 功能
 
 ### 浏览与导航
