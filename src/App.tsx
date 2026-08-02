@@ -71,7 +71,7 @@ import {
 } from "./components/Icons";
 import "./styles/app.css";
 
-const STATE_KEY = "my-bookmark-state";
+const STATE_KEY = "bookmark-state";
 const MIN_COLUMN_WIDTH = 280;
 const MAX_COLUMN_WIDTH = 560;
 const DEFAULT_COLUMN_WIDTH = 340;
@@ -672,7 +672,7 @@ export default function App() {
     await importNodes([{ title: entry.node.title, url: entry.node.url, children: entry.node.children }], entry.parentId);
     const next = trashEntries.filter((item) => item.id !== entry.id);
     setTrashEntries(next);
-    await writeStorage("my-bookmark-trash", next);
+    await writeStorage("bookmark-trash", next);
     await loadBookmarks();
     showToast(t.trash.restored);
   };
@@ -687,7 +687,7 @@ export default function App() {
       onConfirm: async () => {
         await resetBookmarks();
         await writeStorage<SavedState | null>(STATE_KEY, null);
-        await writeStorage<TrashEntry[]>("my-bookmark-trash", []);
+        await writeStorage<TrashEntry[]>("bookmark-trash", []);
         setUndoStack([]);
         setSelectedIds(new Set());
         setDetail(null);
