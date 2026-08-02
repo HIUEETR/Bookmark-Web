@@ -130,13 +130,12 @@ Bookmark-Web/
 |---|---|
 | `bookmark-web-tree` | 书签树结构 |
 | `bookmark-web-next-id` | 下一个书签 id |
-| `bookmark-web-trash` | 回收站数据 |
-| `my-bookmark-trash` | 回收站元数据 |
-| `bookmark-web-columns` | 列布局 |
-| `bookmark-web-theme` | 主题设置 |
-| `bookmark-web-language` | 语言设置 |
+| `my-bookmark-state` | 列布局 |
+| `my-bookmark-trash` | 回收站数据 |
+| `my-bookmark-theme` | 主题设置 |
+| `my-bookmark-locale` | 语言设置 |
 
-刷新页面后数据仍保留；清理浏览器站点数据会删除本地书签，请提前导出备份。
+> 注：键名前缀不统一是历史遗留（部分键沿用扩展版命名），不影响功能。刷新页面后数据仍保留；清理浏览器站点数据会删除本地书签，请提前导出备份。
 
 ## 已知限制
 
