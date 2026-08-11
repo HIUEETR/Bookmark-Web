@@ -758,7 +758,7 @@ export default function App() {
         <StatsPanel stats={stats} onDuplicates={openDuplicates} onEmptyFolders={showClearEmptyModal} />
       </div>
 
-      {selectedIds.size > 0 && <div className="selection-bar">{tr(t.selection.count, { count: selectedIds.size })} — {t.selection.dropHint}</div>}
+
 
       <div className={`workspace${detail ? " has-details" : ""}`}>
         <div className="columns-container">
@@ -838,6 +838,7 @@ export default function App() {
         <BookmarkDetailsPanel detail={detail} onClose={() => setDetail(null)} onEdit={() => detail && setBookmarkEdit(detail.node)} />
       </div>
 
+      {selectedIds.size > 0 && <div className="selection-bar">{tr(t.selection.count, { count: selectedIds.size })} — {t.selection.dropHint}</div>}
       {showEmptyModal && <EmptyFolderModal emptyFolders={emptyFolders} onDelete={handleDeleteEmptyFolders} onClose={() => setShowEmptyModal(false)} />}
       {promptModal && <PromptModal title={promptModal.type === "createFolder" ? t.modal.prompt.newFolder : t.modal.prompt.rename} defaultValue={promptModal.type === "renameFolder" ? promptModal.title : ""} onSubmit={(value) => void handlePromptSubmit(value)} onCancel={() => setPromptModal(null)} />}
       {confirmModal && <ConfirmModal state={confirmModal} onClose={() => setConfirmModal(null)} />}
