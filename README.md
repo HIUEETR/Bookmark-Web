@@ -1,8 +1,18 @@
+<p align="center">
+  <img src="image/README/banner.svg" alt="Bookmark-Web" width="100%" />
+</p>
+
+<div align="center">
+
+[简体中文](README.md) · [English](README.en.md)
+
+</div>
+
 # Bookmark Web
 
-> 离线书签管理器 —— 纯静态网页应用，数据保存在浏览器本地，可部署到 GitHub Pages。
+> 离线书签管理器 —— 纯静态网页应用，数据保存在浏览器本地。
 
-无需安装任何扩展，打开网页即可使用。所有数据保存在浏览器 `localStorage`，不会上传到服务器。适合不想安装扩展、或使用不支持 Chrome 扩展的浏览器（如 Safari、移动端浏览器）的用户。
+无需安装任何扩展，打开网页即可使用。所有数据保存在浏览器 `localStorage`，不会上传到服务器。适合不想安装扩展、或使用不支持 Chrome 扩展的浏览器（如 Safari、其他浏览器）的用户
 
 [点击即可体验](https://hiueetr.github.io/Bookmark-Web/)
 
@@ -14,6 +24,8 @@
 - 列宽可调整，列顺序可拖拽
 - 书签详情侧栏，显示路径、URL、添加时间并支持复制 URL
 
+![1786466271184](image/README/1786466271184.png)
+
 ### 整理
 
 - 拖拽移动书签，支持拖到具体位置排序
@@ -22,6 +34,8 @@
 - 编辑书签标题和 URL，重命名文件夹
 - 清理空文件夹，采用"勾选即删除"的安全语义
 - 根文件夹保护（默认根文件夹不可删除）
+
+![1786466281361](image/README/1786466281361.gif)
 
 ### 搜索
 
@@ -67,34 +81,6 @@ npm run dev
 npm run build
 ```
 
-构建结果位于 `dist/`。
-
-## 部署到 GitHub Pages
-
-项目已配置 GitHub Actions 工作流（[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)），推送到 `main` 分支即自动部署到 GitHub Pages。
-
-工作流会：
-
-1. 安装依赖并 `npm run build`（注入 `VITE_BASE_PATH: /<repo-name>/`）
-2. 上传 `dist/` 为 Pages artifact
-3. 调用 `actions/deploy-pages@v4` 部署
-
-### 仓库设置
-
-部署前需在仓库 Settings → Pages 中将 Source 设为 `GitHub Actions`。
-
-### 手动部署到其他静态托管
-
-```powershell
-# Windows PowerShell
-$env:VITE_BASE_PATH="/<repo-name>/"; npm run build
-
-# macOS / Linux
-VITE_BASE_PATH=/<repo-name>/ npm run build
-```
-
-将 `dist/` 内容上传到任意静态托管即可。若部署在根路径，可省略 `VITE_BASE_PATH`。
-
 ## 验证命令
 
 ```powershell
@@ -137,8 +123,6 @@ Bookmark-Web/
 | `bookmark-theme`       | 主题设置      |
 | `bookmark-locale`      | 语言设置      |
 
-> 注：键名前缀不统一是历史遗留（部分键沿用扩展版命名），不影响功能。刷新页面后数据仍保留；清理浏览器站点数据会删除本地书签，请提前导出备份。
-
 ## 已知限制
 
 - 失效链接检查受 CORS、站点策略和网络环境影响，未知状态需要人工确认
@@ -148,4 +132,8 @@ Bookmark-Web/
 
 ## 相关项目
 
-- **Bookmark**（[仓库](https://github.com/HIUEETR/Bookmark-extension)）：浏览器扩展版本，直接管理 Chrome / Edge 原生书签，使用 `chrome.bookmarks` API，支持在浏览器书签栏中原生显示。
+- [Bookmark-Extension](https://github.com/HIUEETR/Bookmark-extension)：浏览器扩展版本，直接管理 Chrome / Edge 原生书签，使用 `chrome.bookmarks` API，支持在浏览器书签栏中原生显示
+
+## license
+
+Apache-2.0 license
