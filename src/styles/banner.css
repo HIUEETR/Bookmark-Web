@@ -531,14 +531,14 @@ input[type="url"] {
   gap: 5px;
 }
 
-/* ---------- Toolbar + stats: two-row grid (search | domains) ---------- */
+/* ---------- Toolbar + stats: limited-width rows, stats & domains on one line ---------- */
 .toolbar-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(260px, 420px) auto;
   grid-template-rows: auto auto;
-  column-gap: 14px;
+  column-gap: 12px;
   row-gap: 8px;
-  align-items: start;
+  justify-content: start;
 }
 
 .search-box {
@@ -556,70 +556,78 @@ input[type="url"] {
   grid-column: 1;
   grid-row: 2;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
 }
 
 .stat-card {
-  min-width: 88px;
+  min-width: 0;
   border-radius: 12px;
   padding: 8px 12px;
-  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.stat-card span {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .stat-card strong {
-  font-size: 17px;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .domain-list {
   grid-column: 2;
-  grid-row: 1 / span 2;
-  min-width: 190px;
-  max-width: 230px;
-  border-radius: 14px;
-  padding: 10px 12px;
+  grid-row: 2;
+  min-width: 0;
+  max-width: 560px;
+  border-radius: 12px;
+  padding: 8px 12px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-self: stretch;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   overflow: hidden;
 }
 
 .domain-title {
+  flex-shrink: 0;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: var(--text-secondary);
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0;
+  border-bottom: none;
+  white-space: nowrap;
 }
 
 .domain-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
   font-size: 12px;
   color: var(--text-secondary);
-  min-width: 0;
+  white-space: nowrap;
 }
 
 .domain-name {
+  max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .domain-count {
-  flex-shrink: 0;
-  min-width: 20px;
-  text-align: center;
-  padding: 1px 6px;
-  border-radius: 999px;
-  font-size: 11px;
   font-weight: 700;
-  color: #c7d2fe;
-  background: rgba(99, 102, 241, 0.22);
+  color: #a5b4fc;
 }
 
 @media (max-width: 1100px) {
@@ -636,12 +644,14 @@ input[type="url"] {
   .stats-panel {
     grid-column: 1;
     grid-row: 2;
+    flex-wrap: wrap;
   }
 
   .domain-list {
     grid-column: 1;
     grid-row: 3;
     max-width: none;
+    flex-wrap: wrap;
   }
 }
 /* ---------- Reduced motion ---------- */
