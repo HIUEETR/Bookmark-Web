@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      try {
+        var rawTheme = localStorage.getItem("bookmark-theme");
+        var theme = null;
+        if (rawTheme) {
+          try { theme = JSON.parse(rawTheme); } catch (e) { theme = rawTheme; }
+        }
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%icons/icon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%icons/icon-32.png" />
     <title>Bookmark</title>
