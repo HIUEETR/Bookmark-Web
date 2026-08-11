@@ -4,136 +4,136 @@
 
 <div align="center">
 
-[简体中文](README.md) · [English](README.en.md)
+[English](README.md) · [简体中文](README.zh.md)
 
 </div>
 
 # Bookmark Web
 
-> 离线书签管理器 —— 纯静态网页应用，数据保存在浏览器本地。
+> An offline bookmark manager — a pure static web app that keeps your data in the browser.
 
-无需安装任何扩展，打开网页即可使用。所有数据保存在浏览器 `localStorage`，不会上传到服务器。适合不想安装扩展、或使用不支持 Chrome 扩展的浏览器（如 Safari、其他浏览器）的用户
+No extension installation needed; just open the page and use it. All data is stored in the browser's `localStorage` and is never uploaded to any server. It suits users who prefer not to install extensions or who use browsers without Chrome extension support (e.g., Safari and other browsers).
 
-[点击即可体验](https://hiueetr.github.io/Bookmark-Web/)
+[Try it now](https://hiueetr.github.io/Bookmark-Web/)
 
-## 功能
+## Features
 
-### 浏览与导航
+### Browse & Navigate
 
-- 多列浏览书签文件夹，支持新增 / 移除列
-- 列宽可调整，列顺序可拖拽
-- 书签详情侧栏，显示路径、URL、添加时间并支持复制 URL
+- Multi-column bookmark folders, with add / remove column support
+- Adjustable column widths and draggable column order
+- Bookmark detail sidebar showing path, URL, added time, and URL copy support
 
 ![1786466271184](image/README/1786466271184.png)
 
-### 整理
+### Organize
 
-- 拖拽移动书签，支持拖到具体位置排序
-- 批量选择、批量移动和批量删除
-- 移动撤销栈，支持撤销单个或批量移动
-- 编辑书签标题和 URL，重命名文件夹
-- 清理空文件夹，采用"勾选即删除"的安全语义
-- 根文件夹保护（默认根文件夹不可删除）
+- Drag & drop bookmarks, with drop-to-position sorting
+- Batch selection, batch move, and batch delete
+- Move undo stack, supporting undo of single or batch moves
+- Edit bookmark titles and URLs, rename folders
+- Clean up empty folders with a safe "check to delete" flow
+- Root folder protection (the default root folder cannot be deleted)
 
 ![1786466281361](image/README/1786466281361.gif)
 
-### 搜索
+### Search
 
-- 全局搜索标题、URL 和路径，并可定位到所在文件夹
+- Global search across titles, URLs, and paths, with locate-to-folder support
 
-### 检查
+### Check
 
-- 重复书签扫描，按标准化 URL 分组
-- 手动链接检查，最多检查 50 个目标并区分正常、失效和未知
+- Duplicate bookmark scanning, grouped by normalized URL
+- Manual link check for up to 50 targets, distinguishing valid, invalid, and unknown
 
-### 数据
+### Data
 
-- JSON 与 Netscape HTML 书签导入 / 导出
-- 回收站备份，删除前保存可恢复副本
-- 首次进入引导界面（导入文件或加载示例数据）
-- "重置数据"功能（清空本地存储的所有书签，不可撤销）
+- JSON and Netscape HTML bookmark import / export
+- Trash backup — recoverable copies are kept before deletion
+- First-run onboarding (import a file or load sample data)
+- "Reset data" (clears all bookmarks from local storage; not undoable)
 
-### 个性化
+### Customization
 
-- 主题切换（亮色 / 暗色）
-- 中英双语界面
+- Theme switching (light / dark)
+- Chinese & English UI
 
-## 技术栈
+## Tech Stack
 
-| 类别     | 技术                                    |
-| -------- | --------------------------------------- |
-| 框架     | React 18 + TypeScript 5                 |
-| 构建     | Vite 5（支持子路径部署）                |
-| 部署     | GitHub Pages（GitHub Actions 自动部署） |
-| 测试     | Vitest 4                                |
-| 代码规范 | ESLint 10                               |
+| Category   | Technology                                |
+| ---------- | ----------------------------------------- |
+| Framework  | React 18 + TypeScript 5                   |
+| Build      | Vite 5 (sub-path deployment support)      |
+| Deployment | GitHub Pages (GitHub Actions auto-deploy) |
+| Testing    | Vitest 4                                  |
+| Code style | ESLint 10                                 |
 
-## 开发
+## Development
 
 ```powershell
 npm install
 npm run dev
 ```
 
-## 构建
+## Build
 
 ```powershell
 npm run build
 ```
 
-## 验证命令
+## Verification Commands
 
 ```powershell
-npm run typecheck   # 类型检查
-npm run lint         # 代码规范检查
-npm test             # 运行单元测试
-npm run build        # 构建
+npm run typecheck   # Type checking
+npm run lint        # Lint
+npm test            # Unit tests
+npm run build       # Build
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 Bookmark-Web/
 ├── src/
-│   ├── components/         # React 组件（TreeView、各种 Modal、WelcomeScreen 等）
-│   ├── context/            # I18n 与主题 Context
-│   ├── i18n/               # 中英文翻译
-│   ├── lib/                # 书签、存储、导入导出、清理等核心逻辑
-│   ├── styles/             # CSS 样式（app.css、themes.css）
-│   ├── types/              # TypeScript 类型定义
-│   ├── App.tsx             # 主应用
-│   ├── main.tsx            # 入口
-│   └── styles.css          # 全局样式
-├── public/icons/           # 图标
-├── .github/workflows/      # GitHub Actions 工作流
-├── vite.config.ts          # 支持 VITE_BASE_PATH 子路径
+│   ├── components/         # React components (TreeView, Modals, WelcomeScreen, etc.)
+│   ├── context/            # I18n and theme contexts
+│   ├── i18n/               # Chinese & English translations
+│   ├── lib/                # Core logic: bookmarks, storage, import/export, cleanup
+│   ├── styles/             # CSS (app.css, themes.css)
+│   ├── types/              # TypeScript type definitions
+│   ├── App.tsx             # Main app
+│   ├── main.tsx            # Entry point
+│   └── styles.css          # Global styles
+├── public/icons/           # Icons
+├── .github/workflows/      # GitHub Actions workflows
+├── vite.config.ts          # VITE_BASE_PATH sub-path support
 └── tsconfig.json
 ```
 
-## 数据存储
+## Data Storage
 
-书签数据保存在浏览器的 `localStorage` 中：
+Bookmark data is stored in the browser's `localStorage`:
 
-| 键                       | 用途          |
-| ------------------------ | ------------- |
-| `bookmark-web-tree`    | 书签树结构    |
-| `bookmark-web-next-id` | 下一个书签 id |
-| `bookmark-state`       | 列布局        |
-| `bookmark-trash`       | 回收站数据    |
-| `bookmark-theme`       | 主题设置      |
-| `bookmark-locale`      | 语言设置      |
+| Key                      | Purpose          |
+| ------------------------ | ---------------- |
+| `bookmark-web-tree`    | Bookmark tree    |
+| `bookmark-web-next-id` | Next bookmark ID |
+| `bookmark-state`       | Column layout    |
+| `bookmark-trash`       | Trash data       |
+| `bookmark-theme`       | Theme setting    |
+| `bookmark-locale`      | Language setting |
 
-## 已知限制
+## Known Limitations
 
-- 失效链接检查受 CORS、站点策略和网络环境影响，未知状态需要人工确认
-- 回收站恢复会尽量恢复到原父文件夹；如果原父文件夹不存在，恢复可能失败
-- 大书签库优化以过滤、派生数据 memo、限制搜索结果和减少全量刷新为主，尚未引入第三方虚拟滚动库
-- 单个浏览器的 `localStorage` 容量有限（通常 5-10MB），超大量书签库可能遇到存储限制
+- Broken-link checks are affected by CORS, site policies, and network environment; "unknown" results need manual confirmation
+- Trash restore tries to restore to the original parent folder; restore may fail if the parent folder no longer exists
+- Large bookmark libraries are optimized with filtering, derived-data memoization, limited search results, and reduced full re-renders; no third-party virtual scrolling library is used yet
+- A single browser's `localStorage` has limited capacity (usually 5–10 MB); very large bookmark libraries may hit storage limits
 
-## 相关项目
+## Related Projects
 
-- [Bookmark-Extension](https://github.com/HIUEETR/Bookmark-extension)：浏览器扩展版本，直接管理 Chrome / Edge 原生书签，使用 `chrome.bookmarks` API，支持在浏览器书签栏中原生显示
+- [Bookmark-Extension](https://github.com/HIUEETR/Bookmark-extension): the browser-extension version, directly managing native Chrome / Edge bookmarks via the `chrome.bookmarks` API, with native display in the browser bookmark bar
 
-## license
+## License
 
 Apache-2.0 license
