@@ -12,23 +12,25 @@ const MAX_DOMAINS = 4;
 export function StatsPanel({ stats, onDuplicates, onEmptyFolders }: StatsPanelProps) {
   const { t } = useI18n();
   return (
-    <div className="stats-panel">
-      <div className="stat-card">
-        <span>{t.stats.bookmarks}</span>
-        <strong>{stats.bookmarks}</strong>
+    <>
+      <div className="stats-panel">
+        <div className="stat-card">
+          <span>{t.stats.bookmarks}</span>
+          <strong>{stats.bookmarks}</strong>
+        </div>
+        <div className="stat-card">
+          <span>{t.stats.folders}</span>
+          <strong>{stats.folders}</strong>
+        </div>
+        <button className="stat-card stat-action" onClick={onEmptyFolders} title={t.header.clearEmpty}>
+          <span>{t.stats.emptyFolders}</span>
+          <strong>{stats.emptyFolders}</strong>
+        </button>
+        <button className="stat-card stat-action" onClick={onDuplicates} title={t.header.duplicates}>
+          <span>{t.stats.duplicates}</span>
+          <strong>{stats.duplicateUrls}</strong>
+        </button>
       </div>
-      <div className="stat-card">
-        <span>{t.stats.folders}</span>
-        <strong>{stats.folders}</strong>
-      </div>
-      <button className="stat-card stat-action" onClick={onEmptyFolders} title={t.header.clearEmpty}>
-        <span>{t.stats.emptyFolders}</span>
-        <strong>{stats.emptyFolders}</strong>
-      </button>
-      <button className="stat-card stat-action" onClick={onDuplicates} title={t.header.duplicates}>
-        <span>{t.stats.duplicates}</span>
-        <strong>{stats.duplicateUrls}</strong>
-      </button>
       {stats.topDomains.length > 0 && (
         <div className="domain-list">
           <span className="domain-title">{t.stats.topDomains}</span>
@@ -40,6 +42,6 @@ export function StatsPanel({ stats, onDuplicates, onEmptyFolders }: StatsPanelPr
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
